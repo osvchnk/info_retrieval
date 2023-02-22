@@ -2,6 +2,7 @@ import os
 import urllib.parse
 import requests
 from bs4 import BeautifulSoup
+from utils import get_data_path
 
 
 def get_links(html: BeautifulSoup) -> list:
@@ -53,21 +54,24 @@ while len(links) < 100:
 
 
 # create folder for files if not exists
-path = os.getcwd() + "\\files"
-isExist = os.path.exists(path)
+data_path = get_data_path()
+files_path = data_path + "\\files"
+isExist = os.path.exists(files_path)
 if not isExist:
-    os.makedirs(path)
+    os.makedirs(files_path)
 
 
 count = 1
-index = open("index.txt", "w", encoding="UTF-8")
+index = open(f"{data_path}/index.txt", "w", encoding="UTF-8")
 for link in links:
     url = "https://ru.wikipedia.org" + link
     content = requests.get(url).content.decode("UTF-8")
-    with open(f"files/{count}.html", "w", encoding="UTF-8") as file:
+    with open(f"{files_path}/{count}.html", "w", encoding="UTF-8") as file:
         file.write(content)
 
     index.write(f"{count}   https://ru.wikipedia.org{urllib.parse.unquote(link)}\n")
     count += 1
 index.close()
 
+# create html files archive
+os.system(f'rar a <files.rar> <{files_path}>')
