@@ -35,13 +35,13 @@ def is_func_words(word: str, morph: pymorphy2.MorphAnalyzer) -> bool:
 
 def clean_data(data: list, morph: pymorphy2.MorphAnalyzer) -> list:
     """
-    Clean word list data: lower case, remove functional words
+    Clean word list data: lower case, remove functional words, remove duplicates
     :param data: word list
     :param morph: morphological analyzer for Russian language
     :return: token list
     """
-    # lower case
-    words = list(map(lambda word: word.lower(), data))
+    # lower case, remove duplicates
+    words = list(set(map(lambda word: word.lower(), data)))
     # remove functional words
     for word in words:
         if is_func_words(word, morph):
