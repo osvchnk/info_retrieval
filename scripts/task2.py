@@ -49,6 +49,23 @@ def clean_data(data: list, morph: pymorphy2.MorphAnalyzer) -> list:
     return words
 
 
+def create_lemmas_dict(tokens: list, morph: pymorphy2.MorphAnalyzer) -> dict:
+    """
+    Get tokens, return lemmas
+    :param tokens: word list
+    :param morph: morphological analyzer for Russian language
+    :return: lemmas dictionary like {"normal form": {"word form 1", "word form 2", ...}, ...}
+    """
+    lemmas = {}
+    for token in tokens:
+        normal_form = morph.parse(token)[0].normal_form
+        if normal_form in lemmas.keys():
+            lemmas[normal_form].add(token)
+        else:
+            lemmas[normal_form] = {token}
+    return lemmas
+
+
 # create folder for files if not exists
 def create_folder(name: str, path: str) -> str:
     folder_path = f"{path}\\{name}"
@@ -64,6 +81,9 @@ lemmas_path = create_folder("lemmas", get_data_path())
 files_path = get_data_path() + "\\files"
 morph = pymorphy2.MorphAnalyzer()
 
+# tokens from all files
+all_tokens = []
+
 for html_file in os.listdir(files_path):
     file_count = html_file.split(".")[0]
     with open(f"{files_path}\\{html_file}", "r", encoding="UTF-8") as file:
@@ -72,14 +92,9 @@ for html_file in os.listdir(files_path):
         words = get_russian_words_from_wiki_page(html)
         tokens = clean_data(words, morph)
 
-    # create lemmas dictionary
-    lemmas_dict = {}
-    for word in tokens:
-        normal_form = morph.parse(word)[0].normal_form
-        if normal_form in lemmas_dict.keys():
-            lemmas_dict[normal_form].add(word)
-        else:
-            lemmas_dict[normal_form] = {word}
+    all_tokens += tokens
+
+    lemmas_dict = create_lemmas_dict(tokens, morph)
 
     # create tokens file
     with open(f"{tokens_path}\\tokens_{file_count}.txt", "w", encoding="UTF-8") as file:
@@ -91,4 +106,22 @@ for html_file in os.listdir(files_path):
         for lemma in lemmas_dict.keys():
             values = ' '.join(value for value in lemmas_dict[lemma])
             file.write(f"{lemma}: {values}\n")
+
+
+# remove dublicates
+all_tokens = list(set(all_tokens))
+
+# lemmas from all files
+all_lemmas = create_lemmas_dict(all_tokens, morph)
+
+# create file with tokens from all files
+with open(f"{get_data_path()}\\tokens.txt", "w", encoding="UTF-8") as file:
+    for token in all_tokens:
+        file.write(f"{token}\n")
+
+# create file with lemmas from all files
+with open(f"{get_data_path()}\\lemmas.txt", "w", encoding="UTF-8") as file:
+    for lemma in all_lemmas:
+        values = ' '.join(value for value in all_lemmas[lemma])
+        file.write(f"{lemma}: {values}\n")
 
