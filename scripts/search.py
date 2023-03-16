@@ -21,10 +21,13 @@ def read_index(index_path: str) -> dict:
 
 def get_index(word: str, index: dict) -> set:
     normal_form = morph.parse(word)[0].normal_form
-    return index[normal_form]
+    try:
+        return index[normal_form]
+    except:
+        print(f"there is no such word like {word}")
 
 
-def search(query: str, index: dict) -> Union[list, None]:
+def search(query: str, index: dict) -> Union[set, None]:
     """
     " " - AND
     "-" - NOT
@@ -36,20 +39,19 @@ def search(query: str, index: dict) -> Union[list, None]:
         print("empty query")
         return None
 
+    all_files_index = {i for i in range(1, 290)}
+    result = all_files_index
     or_split = query.split("|")
     for s in or_split:
-        w = s.split()
-        not_words = []
-        words = []
-        for word in w:
+        words = s.split()
+
+        for word in words:
             if word.startswith("-"):
-                not_words.append(word)
+                result.difference(get_index(word[1:], index))
             else:
-                words.append(word)
+                result.intersection_update(get_index(word, index))
 
-        result = {}    
-
-    pass
+    return result
 
 
 if __name__ == "__main__":
@@ -58,4 +60,5 @@ if __name__ == "__main__":
     morph = pymorphy2.MorphAnalyzer()
     index = read_index(index_path)
 
-    search(input(), index)
+    while True:
+        print(search(input(), index))
