@@ -40,16 +40,18 @@ def search(query: str, index: dict) -> Union[set, None]:
         return None
 
     all_files_index = {i for i in range(1, 290)}
-    result = all_files_index
     or_split = query.split("|")
+    result = set()
     for s in or_split:
         words = s.split()
-
+        and_result = all_files_index.copy()
         for word in words:
             if word.startswith("-"):
-                result.difference(get_index(word[1:], index))
+                and_result.difference_update(get_index(word[1:], index))
             else:
-                result.intersection_update(get_index(word, index))
+                and_result.intersection_update(get_index(word, index))
+        print(and_result)
+        result = result.union(and_result)
 
     return result
 
@@ -61,4 +63,4 @@ if __name__ == "__main__":
     index = read_index(index_path)
 
     while True:
-        print(search(input(), index))
+        print(f"Результат: {search(input(), index)}")
