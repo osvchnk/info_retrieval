@@ -50,7 +50,6 @@ def search(query: str, index: dict) -> Union[set, None]:
                 and_result.difference_update(get_index(word[1:], index))
             else:
                 and_result.intersection_update(get_index(word, index))
-        print(and_result)
         result = result.union(and_result)
 
     return result
