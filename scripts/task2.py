@@ -1,6 +1,6 @@
 import pymorphy2
 import re
-from utils import get_data_path
+from scripts.utils import get_data_path
 from bs4 import BeautifulSoup
 import os
 

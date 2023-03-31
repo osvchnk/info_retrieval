@@ -1,7 +1,7 @@
 import pymorphy2
 
-from utils import get_data_path
-from task4 import clean_data, get_lemmas
+from scripts.utils import get_data_path
+from scripts.task4 import clean_data, get_lemmas
 
 
 def load_links(file_path: str) -> dict[int, str]:

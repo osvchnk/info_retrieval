@@ -3,8 +3,8 @@ import os
 import math
 
 from collections import Counter
-from utils import get_data_path
-from task2 import get_russian_words_from_wiki_page, is_func_words
+from scripts.utils import get_data_path
+from scripts.task2 import get_russian_words_from_wiki_page, is_func_words
 
 
 def clean_data(data: list, morph: pymorphy2.MorphAnalyzer) -> list:
